@@ -33,7 +33,7 @@
                         <span class="icon-bar"></span>
                         <span class="icon-bar"></span> 
                     </button>
-                    <a class="navbar-brand" href="#">Network Configurator</a>
+                    <a class="navbar-brand" href="index.php">Network Configurator</a>
                 </div>
                 <div class="collapse navbar-collapse" id="myNavbar">
                     <ul class="nav navbar-nav">
@@ -61,7 +61,9 @@
         </div>
 
         <div class="container">
-            <h1>Networking Devices Configurator</h1>
+            <header class="header-section">
+                <h1>Networking Devices Configurator</h1>
+            </header>
         </div>
         
         <div class="container">
@@ -113,7 +115,14 @@
         </div>
         
         <div class="container">
-            
+            <header class="header-section">
+                <h3>Perché affidarsi a questo sito?</h3>
+            </header>
+        </div>
+        
+        <div class="container">
+            <p>Questo sito nasce con l'idea di rendere più facile la vita di tutti quei Network Engineer, System Administrator e professionisti del mondo IT che devono configurare switch e router.
+               Basta inserire pochi dati e si potrà subito avere a disposizione uno "scheletro" di configurazione adeguato all'apparato selezionato e alla sua sintassi dei comandi.</p>
         </div>
     </body>
 </html>

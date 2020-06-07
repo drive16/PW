@@ -19,6 +19,11 @@ h1 {
     text-align: center;
 }
 
+.header-section {
+    border-bottom: 3px solid #2f2f33;
+    margin-bottom: 2em;
+}
+
 .navbar-brand {
     font-weight: bolder;
 }
@@ -28,6 +33,23 @@ h1 {
     font-weight: bold;
 }
 
+.breadcrumb > li > a {
+    color: black;
+}
+
+.dropdown-menu > .active > a,
+.dropdown-menu > .active > a:hover,
+.dropdown-menu > .active > a:focus {
+  color: #ffffff;
+  text-decoration: none;
+  background-color: #6c7780;
+  outline: 0;
+}
+
+li a:hover:not(.active) {
+    background-color: #ddd;
+}
+ 
 .carousel-inner > .item {
   height: 50vh;
 }
@@ -55,10 +77,6 @@ h1 {
 
 .carousel .carousel-indicators .active {
   background-color: #444;
-}
-
-.breadcrumb > li > a {
-    color: black;
 }
 
 .carousel-caption > h4, p {
