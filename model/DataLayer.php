@@ -17,53 +17,65 @@ class DataLayer
         return $connection;
     }
     
-    public function listDevices()
+    public function listRouters()
     {
         $connection = $this->db_connect();
         
-        $sql = "SELECT * FROM devices ORDER BY model";
+        $sql = "SELECT * FROM routerTable ORDER BY name";
         
         $risposta = mysqli_query($connection, $sql) or die('Errore nella query: ' . $sql . '\n' . mysqli_error());
         
         mysqli_close($connection);
         
-        $devices = array();
+        $routers = array();
         while($riga = mysqli_fetch_array($risposta))
         {
-            $author = $this->findAuthorById($riga['author_id']);
-            $books[] = new Book($riga['id'], $riga['title'], $author->getLastName(), $riga['author_id']);
+            $routers[] = new Router($riga['name'], $riga['model'], $riga['type'], $riga['firmware'], $riga['ports'], $riga['serialNumber']);
         }
-        return $devices;
+        return $routers;
     }
     
-    public function listAuthors()
+    public function listSwitches()
     {
         $connection = $this->db_connect();
         
-        $sql = "SELECT * FROM author ORDER BY lastname,firstname";
+        $sql = "SELECT * FROM switchesTable ORDER BY name";
         
         $risposta = mysqli_query($connection, $sql) or die('Errore nella query: ' . $sql . '\n' . mysqli_error());
         
         mysqli_close($connection);
         
-        $authors = array();
+        $switches = array();
         while($riga = mysqli_fetch_array($risposta))
         {
-            $authors[] = new Author($riga['id'], $riga['firstname'], $riga['lastname']);
+            $switches[] = new Router($riga['name'], $riga['model'], $riga['type'], $riga['firmware'], $riga['ports'], $riga['serialNumber']);
         }
-        return $authors;
+        return $switches;
     }
+
     
-    public function findAuthorById($id)
+    public function findRouterBySerial($serial)
     {
         $connection = $this->db_connect();
-        $sql = "SELECT * FROM author where id='".$id."'";
+        $sql = "SELECT * FROM routerTable where serialNumber='".$serial."'";
         $risposta = mysqli_query($connection, $sql) or die('Errore nella query: ' . $sql . '\n' . mysqli_error());
         mysqli_close($connection);
         
         $riga = mysqli_fetch_array($risposta);
         
-        return new Author($riga['id'], $riga['firstname'], $riga['lastname']);
+        return new Router($riga['name'], $riga['model'], $riga['type'], $riga['firmware'], $riga['ports'], $riga['serialNumber']);
+    }
+
+    public function findSwitchBySerial($serial)
+    {
+        $connection = $this->db_connect();
+        $sql = "SELECT * FROM switchesTable where serialNumber='".$serial."'";
+        $risposta = mysqli_query($connection, $sql) or die('Errore nella query: ' . $sql . '\n' . mysqli_error());
+        mysqli_close($connection);
+        
+        $riga = mysqli_fetch_array($risposta);
+        
+        return new Switches($riga['name'], $riga['model'], $riga['type'], $riga['firmware'], $riga['ports'], $riga['serialNumber']);
     }
     
     public function deleteAuthor($id) 

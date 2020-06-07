@@ -5,8 +5,8 @@
         include 'model/' . $class . '.php';
     });
 
-$dl = new DataLayer();
-    
+    $dl = new DataLayer();
+    $routers_list = $dl->listRouters();
 ?>
 
 <html>
@@ -50,6 +50,60 @@ $dl = new DataLayer();
                 <li class="active">My Devices</li>
                 <li class="active">Routers</li>
             </ul>
+        </div>
+        
+        <div class="container">
+            <header class="header-section">
+                <h1>Routers</h1>
+            </header>
+        </div>
+        
+        <div class="container">
+            <div class="row">
+                <div class="col-md-offset-10 col-xs-5">
+                    <p>
+                        <a class="btn btn-default" href="insertRouter.php"><span class="glyphicon glyphicon-plus"></span> Insert new router</a>
+                    </p>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <table class="table table-striped table-hover table-responsive" style="width:100%">
+                        <col width="10%">
+                        <col width="70%">
+                        <col width="10%">
+                        <col width="10%">
+
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Serial Number</th>
+                                <th></th>
+                                <th></th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+
+                            <?php
+                            foreach ($routers_list as $switches) {
+                                echo '<tr>';
+                                echo '<td>' . $switches->getName() . '</td>';
+                                echo '<td>' . $switches->getSerialNumber() . '</td>';
+                                echo '<td>';
+                                echo '<a class="btn btn-primary" href="editRouters.php?serialNumber=' . $switches->getSerialNumber() . '"><span class="glyphicon glyphicon-pencil"></span> Edit</a>';
+                                echo '</td>';
+                                echo '<td>';
+                                echo '<a class="btn btn-danger" href="deleteRouters.php?serialNumber=' . $switches->getSerialNumber() . '"><span class="glyphicon glyphicon-remove"></span> Delete</a>';
+                                echo '</td>';
+                                echo '</tr>';
+                            }
+                            ?>
+
+                        </tbody>
+                    </table>
+                </div>
+            </div>
         </div>
     </body>
 </html>

@@ -50,8 +50,8 @@ class Router implements Apparato
         $this->model = $model;
     }
 
-    function setTypology($typology): void {
-        $this->typology = $typology;
+    function setType($type): void {
+        $this->type = $type;
     }
 
     function setFirmware($firmware): void {

@@ -14,17 +14,17 @@ interface Apparato
 
     public function getSerialNumber();
             
-    public function setName();
+    public function setName($name);
     
-    public function setModel();
+    public function setModel($model);
 
-    public function setTypology();
+    public function setType($type);
 
-    public function setFirmware();
+    public function setFirmware($firmware);
 
-    public function setPorts();
+    public function setPorts($ports);
 
-    public function setSerialNumber();
+    public function setSerialNumber($serialNumber);
 
 }
 ?>

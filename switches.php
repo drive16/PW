@@ -5,8 +5,8 @@
         include 'model/' . $class . '.php';
     });
 
-$dl = new DataLayer();
-    
+    $dl = new DataLayer();
+    $switches_list = $dl->listSwitches();
 ?>
 
 <html>
@@ -51,5 +51,60 @@ $dl = new DataLayer();
                 <li class="active">Switches</li>
             </ul>
         </div>
+        
+        <div class="container">
+            <header class="header-section">
+                <h1>Switches</h1>
+            </header>
+        </div>
+        
+        <div class="container">
+            <div class="row">
+                <div class="col-md-offset-10 col-xs-5">
+                    <p>
+                        <a class="btn btn-default" href="insertSwitch.php"><span class="glyphicon glyphicon-plus"></span> Insert new switch</a>
+                    </p>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <table class="table table-striped table-hover table-responsive" style="width:100%">
+                        <col width="10%">
+                        <col width="70%">
+                        <col width="10%">
+                        <col width="10%">
+
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Serial Number</th>
+                                <th></th>
+                                <th></th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+
+                            <?php
+                            foreach ($switches_list as $switches) {
+                                echo '<tr>';
+                                echo '<td>' . $switches->getName() . '</td>';
+                                echo '<td>' . $switches->getSerialNumber() . '</td>';
+                                echo '<td>';
+                                echo '<a class="btn btn-primary" href="editSwitches.php?serialNumber=' . $switches->getSerialNumber() . '"><span class="glyphicon glyphicon-pencil"></span> Edit</a>';
+                                echo '</td>';
+                                echo '<td>';
+                                echo '<a class="btn btn-danger" href="deleteSwitches.php?serialNumber=' . $switches->getSerialNumber() . '"><span class="glyphicon glyphicon-remove"></span> Delete</a>';
+                                echo '</td>';
+                                echo '</tr>';
+                            }
+                            ?>
+
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        
     </body>
 </html>
