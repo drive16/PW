@@ -78,6 +78,42 @@ class DataLayer
         return new Switches($riga['name'], $riga['model'], $riga['type'], $riga['firmware'], $riga['ports'], $riga['serialNumber']);
     }
     
+    public function editRouter($name, $model, $firmware, $ports, $serialNumber)
+    {
+        $connection = $this->db_connect();
+        $sql = "UPDATE routerTable SET name='".$name."', model='".$model."', type='"."Router"."', firmware='".$firmware."', ports='".$ports."' WHERE serialNumber='".$serialNumber."'";
+        mysqli_query($connection, $sql) or die('Errore nella query: ' . $sql . '\n' . mysqli_error());
+        
+        mysqli_close($connection);
+    }
+    
+    public function editSwitch($name, $model, $firmware, $ports, $serialNumber)
+    {
+        $connection = $this->db_connect();
+        $sql = "UPDATE switchesTable SET name='".$name."', model='".$model."', firmware='".$firmware."', ports='".$ports."' WHERE serialNumber='".$serialNumber."'";
+        mysqli_query($connection, $sql) or die('Errore nella query: ' . $sql . '\n' . mysqli_error());
+        
+        mysqli_close($connection);
+    }
+    
+    public function addRouter($name, $model, $firmware, $ports, $serialNumber)
+    {
+        $connection = $this->db_connect();
+        $sql = "INSERT INTO routerTable (name,model,type,firmware,ports,serialNumber) VALUES ('".$name."','".$model."','"."Router"."','".$firmware."','".$ports."','".$serialNumber."')";
+        mysqli_query($connection, $sql) or die('Errore nella query: ' . $sql . '\n' . mysqli_error());
+        
+        mysqli_close($connection);
+    }
+    
+    public function addSwitch($name, $model, $firmware, $ports, $serialNumber, $type = Switches)
+    {
+        $connection = $this->db_connect();
+        $sql = "INSERT INTO switchesTable (name,model,type,firmware,ports,serialNumber) VALUES ('".$name."','".$model."','".$type."','".$firmware."','".$ports."','".$serialNumber."')";
+        mysqli_query($connection, $sql) or die('Errore nella query: ' . $sql . '\n' . mysqli_error());
+        
+        mysqli_close($connection);
+    }
+    
     public function deleteAuthor($id) 
     {
         $connection = $this->db_connect();
