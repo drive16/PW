@@ -14,8 +14,7 @@
         <meta charset="utf-8">
         <title>Bootstrap Hello World! Example</title>
         
-        <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no"> 
         <!-- Fogli di stile
         <link rel="stylesheet" href="css/bootstrap.min.css">
         <link rel="stylesheet" href="css/style.css">
@@ -25,7 +24,7 @@
         <script src="js/bootstrap.min.js"></script>
     </head>-->
     <body>
-        <nav class="navbar-inverse navbar-expand-md navbar-dark bg-dark">
+        <nav class="navbar-inverse navbar-expand-md">
             <div class="container">
                 <div class="container-fluid">
                     <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#myNavbar">
@@ -53,7 +52,7 @@
                 </div>
             </div>
         </nav>
-        
+
         <div class="container">
             <ul class="breadcrumb pull-right">
                 <li><a class="active">Home</a></li>
