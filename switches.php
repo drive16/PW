@@ -4,9 +4,20 @@
     spl_autoload_register(function ($class) {
         include 'model/' . $class . '.php';
     });
-
+    
+    session_start();
+        if(!$_SESSION['logged']) {
+            header("location: auth.php");
+    }
+    
+    if(isset($_GET['logout'])) {
+        session_destroy();
+        header("location: index.php");
+    }
+    
     $dl = new DataLayer();
-    $switches_list = $dl->listSwitches();
+    $userID = $dl->getUserID($_SESSION['loggedName']);
+    $switches_list = $dl->listSwitches($userID);
 ?>
 
 <html>
@@ -37,8 +48,12 @@
                         </li>
                     </ul>
                     <ul class="nav navbar-nav navbar-right">
-                        <li><a href="#"><span class="glyphicon glyphicon-user"></span> Sign Up</a></li>
-                        <li><a href="#"><span class="glyphicon glyphicon-log-in"></span> Login</a></li>
+                        <?php
+                            if(isset($_SESSION['logged'])) {
+                                echo '<li><a>Welcome ' . $_SESSION["loggedName"] . '</a></li>';
+                                echo '<li><a href="' . $_SERVER["PHP_SELF"] . '?logout=logout">Logout <span class="glyphicon glyphicon-log-out"></span></a></li>';
+                            }
+                        ?>
                     </ul>
                 </div>
             </div>
@@ -62,24 +77,24 @@
             <div class="row">
                 <div class="col-md-offset-10 col-xs-5">
                     <p>
-                        <a class="btn btn-default" href="insertSwitch.php"><span class="glyphicon glyphicon-plus"></span> Insert new switch</a>
+                        <a class="btn btn-default" href="editSwitches.php"><span class="glyphicon glyphicon-plus"></span> Insert new switch</a>
                     </p>
                 </div>
             </div>
             <div class="row">
                 <div class="col-md-12">
                     <table class="table table-striped table-hover table-responsive" style="width:100%">
-                        <col width="10%">
-                        <col width="70%">
-                        <col width="10%">
-                        <col width="10%">
+                        <col width="15%">
+                        <col width="15%">
+                        <col width="15%">
+                        <col width="35%">
 
                         <thead>
                             <tr>
                                 <th>Name</th>
+                                <th>Model</th>
+                                <th>Firmware version</th>
                                 <th>Serial Number</th>
-                                <th></th>
-                                <th></th>
                             </tr>
                         </thead>
 
@@ -89,6 +104,8 @@
                             foreach ($switches_list as $switches) {
                                 echo '<tr>';
                                 echo '<td>' . $switches->getName() . '</td>';
+                                echo '<td>' . $switches->getModel() . '</td>';
+                                echo '<td>' . $switches->getFirmware() . '</td>';
                                 echo '<td>' . $switches->getSerialNumber() . '</td>';
                                 echo '<td>';
                                 echo '<a class="btn btn-primary" href="editSwitches.php?serialNumber=' . $switches->getSerialNumber() . '"><span class="glyphicon glyphicon-pencil"></span> Edit</a>';

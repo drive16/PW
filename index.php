@@ -1,11 +1,18 @@
-<?PHP
+<?php
     require_once('utils/XHTML_functions.php');
+    
+    session_start();
+    
+    if(isset($_GET['logout'])) {
+        session_destroy();
+        header("location: index.php");
+    }
 ?>
 <!DOCTYPE html>
 <!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
 <!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
 <!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
-<!--[if gt IE 8]><!--> 
+<!--[if gt IE 8]><!-->
 <html> <!--<![endif]-->
     <?php
         echo html_head("Network Configurator");
@@ -46,8 +53,14 @@
                         </li>
                     </ul>
                     <ul class="nav navbar-nav navbar-right">
-                        <li><a href="#"><span class="glyphicon glyphicon-user"></span> Sign Up</a></li>
-                        <li><a href="#"><span class="glyphicon glyphicon-log-in"></span> Login</a></li>
+                        <?php
+                            if(isset($_SESSION['logged'])) {
+                                echo '<li><a>Welcome ' . $_SESSION["loggedName"] . '</a></li>';
+                                echo '<li><a href="' . $_SERVER["PHP_SELF"] . '?logout=logout">Logout <span class="glyphicon glyphicon-log-out"></span></a></li>';
+                            } else {
+                                echo '<li><a href="auth.php"><span class="glyphicon glyphicon-log-in"></span> Login/Registrazione</a></li>';
+                            }
+                        ?>
                     </ul>
                 </div>
             </div>

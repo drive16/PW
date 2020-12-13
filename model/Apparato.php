@@ -13,7 +13,9 @@ interface Apparato
     public function getPorts();
 
     public function getSerialNumber();
-            
+    
+    public function getUserID();
+
     public function setName($name);
     
     public function setModel($model);
@@ -25,6 +27,8 @@ interface Apparato
     public function setPorts($ports);
 
     public function setSerialNumber($serialNumber);
+    
+    public function setUserID($userID);
 
 }
 ?>

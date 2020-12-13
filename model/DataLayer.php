@@ -17,11 +17,11 @@ class DataLayer
         return $connection;
     }
     
-    public function listRouters()
+    public function listRouters($user)
     {
         $connection = $this->db_connect();
         
-        $sql = "SELECT * FROM routerTable ORDER BY name";
+        $sql = "SELECT * FROM routerTable WHERE userID = " . $user . " ORDER BY name";
         
         $risposta = mysqli_query($connection, $sql) or die('Errore nella query: ' . $sql . '\n' . mysqli_error());
         
@@ -30,16 +30,16 @@ class DataLayer
         $routers = array();
         while($riga = mysqli_fetch_array($risposta))
         {
-            $routers[] = new Router($riga['name'], $riga['model'], $riga['type'], $riga['firmware'], $riga['ports'], $riga['serialNumber']);
+            $routers[] = new Router($riga['name'], $riga['model'], $riga['type'], $riga['firmware'], $riga['ports'], $riga['serialNumber'], $riga['userID']);
         }
         return $routers;
     }
     
-    public function listSwitches()
+    public function listSwitches($user)
     {
         $connection = $this->db_connect();
         
-        $sql = "SELECT * FROM switchesTable ORDER BY name";
+        $sql = "SELECT * FROM switchesTable WHERE userID = " . $user . " ORDER BY name";
         
         $risposta = mysqli_query($connection, $sql) or die('Errore nella query: ' . $sql . '\n' . mysqli_error());
         
@@ -48,7 +48,7 @@ class DataLayer
         $switches = array();
         while($riga = mysqli_fetch_array($risposta))
         {
-            $switches[] = new Router($riga['name'], $riga['model'], $riga['type'], $riga['firmware'], $riga['ports'], $riga['serialNumber']);
+            $switches[] = new Switches($riga['name'], $riga['model'], $riga['type'], $riga['firmware'], $riga['ports'], $riga['serialNumber'], $riga['userID']);
         }
         return $switches;
     }
@@ -63,7 +63,7 @@ class DataLayer
         
         $riga = mysqli_fetch_array($risposta);
         
-        return new Router($riga['name'], $riga['model'], $riga['type'], $riga['firmware'], $riga['ports'], $riga['serialNumber']);
+        return new Router($riga['name'], $riga['model'], $riga['type'], $riga['firmware'], $riga['ports'], $riga['serialNumber'], $riga['userID']);
     }
 
     public function findSwitchBySerial($serial)
@@ -75,13 +75,13 @@ class DataLayer
         
         $riga = mysqli_fetch_array($risposta);
         
-        return new Switches($riga['name'], $riga['model'], $riga['type'], $riga['firmware'], $riga['ports'], $riga['serialNumber']);
+        return new Switches($riga['name'], $riga['model'], $riga['type'], $riga['firmware'], $riga['ports'], $riga['serialNumber'], $riga['userID']);
     }
     
     public function editRouter($name, $model, $firmware, $ports, $serialNumber)
     {
         $connection = $this->db_connect();
-        $sql = "UPDATE routerTable SET name='".$name."', model='".$model."', type='"."Router"."', firmware='".$firmware."', ports='".$ports."' WHERE serialNumber='".$serialNumber."'";
+        $sql = "UPDATE routerTable SET name='".$name."', model='".$model."', firmware='".$firmware."', ports='".$ports."' WHERE serialNumber='".$serialNumber."'";
         mysqli_query($connection, $sql) or die('Errore nella query: ' . $sql . '\n' . mysqli_error());
         
         mysqli_close($connection);
@@ -96,19 +96,37 @@ class DataLayer
         mysqli_close($connection);
     }
     
-    public function addRouter($name, $model, $firmware, $ports, $serialNumber)
+    public function addRouter($name, $model, $firmware, $ports, $serialNumber, $user)
     {
         $connection = $this->db_connect();
-        $sql = "INSERT INTO routerTable (name,model,type,firmware,ports,serialNumber) VALUES ('".$name."','".$model."','"."Router"."','".$firmware."','".$ports."','".$serialNumber."')";
+        $sql = "INSERT INTO routerTable (name,model,type,firmware,ports,serialNumber,userID) VALUES ('".$name."','".$model."','"."Router"."','".$firmware."','".$ports."','".$serialNumber."','".$user."')";
         mysqli_query($connection, $sql) or die('Errore nella query: ' . $sql . '\n' . mysqli_error());
         
         mysqli_close($connection);
     }
     
-    public function addSwitch($name, $model, $firmware, $ports, $serialNumber, $type = Switches)
+    public function addSwitch($name, $model, $firmware, $ports, $serialNumber, $user)
     {
         $connection = $this->db_connect();
-        $sql = "INSERT INTO switchesTable (name,model,type,firmware,ports,serialNumber) VALUES ('".$name."','".$model."','".$type."','".$firmware."','".$ports."','".$serialNumber."')";
+        $sql = "INSERT INTO switchesTable (name,model,type,firmware,ports,serialNumber,userID) VALUES ('".$name."','".$model."','"."Switches"."','".$firmware."','".$ports."','".$serialNumber."','".$user."')";
+        mysqli_query($connection, $sql) or die('Errore nella query: ' . $sql . '\n' . mysqli_error());
+        
+        mysqli_close($connection);
+    }
+    
+    public function deleteRouter($serialNumber)
+    {
+        $connection = $this->db_connect();
+        $sql = "DELETE FROM routerTable WHERE serialNumber='".$serialNumber."'";
+        mysqli_query($connection, $sql) or die('Errore nella query: ' . $sql . '\n' . mysqli_error());
+        
+        mysqli_close($connection);
+    }
+    
+    public function deleteSwitches($serialNumber)
+    {
+        $connection = $this->db_connect();
+        $sql = "DELETE FROM switchesTable WHERE serialNumber='".$serialNumber."'";
         mysqli_query($connection, $sql) or die('Errore nella query: ' . $sql . '\n' . mysqli_error());
         
         mysqli_close($connection);
@@ -122,25 +140,7 @@ class DataLayer
         
         mysqli_close($connection);
     }
-    
-    public function editAuthor($id,$first_name,$last_name)
-    {
-        $connection = $this->db_connect();
-        $sql = "UPDATE author SET firstname='".$first_name."', lastname='".$last_name."' WHERE id=".$id;
-        mysqli_query($connection, $sql) or die('Errore nella query: ' . $sql . '\n' . mysqli_error());
-        
-        mysqli_close($connection);
-    }
-    
-    public function addAuthor($first_name,$last_name)
-    {
-        $connection = $this->db_connect();
-        $sql = "INSERT INTO author (firstname,lastname) VALUES ('".$first_name."','".$last_name."')";
-        mysqli_query($connection, $sql) or die('Errore nella query: ' . $sql . '\n' . mysqli_error());
-        
-        mysqli_close($connection);
-    }
-    
+
     public function findBookById($id)
     {
         $connection = $this->db_connect();
@@ -164,24 +164,6 @@ class DataLayer
         mysqli_close($connection);
     }
     
-    public function editBook($id,$title,$author_id)
-    {
-        $connection = $this->db_connect();
-        $sql = "UPDATE book SET title='".$title."', author_id='".$author_id."' WHERE id=".$id;
-        mysqli_query($connection, $sql) or die('Errore nella query: ' . $sql . '\n' . mysqli_error());
-        
-        mysqli_close($connection);
-    }
-    
-    public function addBook($title,$author_id)
-    {
-        $connection = $this->db_connect();
-        $sql = "INSERT INTO book (title,author_id) VALUES ('".$title."','".$author_id."')";
-        mysqli_query($connection, $sql) or die('Errore nella query: ' . $sql . '\n' . mysqli_error());
-        
-        mysqli_close($connection);
-    }
-    
     public function findBooksByAuthorID($author_id)
     {
         $connection = $this->db_connect();
@@ -199,6 +181,43 @@ class DataLayer
             return false;
         }
     }
+    
+    public function validUser($username, $password) {
+        $connection = $this->db_connect();
+        $sql = "SELECT password FROM user WHERE username = '" . $username . "'";
+
+        $risposta = mysqli_query($connection, $sql) or 
+                die("Errore nella query: " . $sql . "\n" . mysqli_error());
+
+        if (mysqli_affected_rows($connection) == 0) {
+            return FALSE;
+        }
+        $riga = mysqli_fetch_array($risposta);
+        mysqli_close($connection);
+
+        return (md5($password) == $riga['password']);
+    }
+    
+    public function addUser($username, $password, $email) {
+        $connection = $this->db_connect();
+        $sql = "INSERT INTO user (username,password,email) VALUES ('" 
+                . $username . "','" . md5($password) . "','" . $email . "')";
+        mysqli_query($connection, $sql) or 
+                die('Errore nella query: ' . $sql . '\n' . mysqli_error());
+
+        mysqli_close($connection);
+    }
+    
+    public function getUserID($username) {
+        $connection = $this->db_connect();
+        $sql = "SELECT id FROM user WHERE username = '" . $username . "'";
+        
+        $risposta = mysqli_query($connection, $sql) or 
+                die("Errore nella query: " . $sql . "\n" . mysqli_error());
+        $riga = mysqli_fetch_array($risposta);
+        mysqli_close($connection);
+        
+        return $riga['id'];
+    }
 }  
 ?>
-

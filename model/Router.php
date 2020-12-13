@@ -7,14 +7,16 @@ class Router implements Apparato
     private $firmware;
     private $ports;
     private $serialNumber;
+    private $userID;
     
-    function __construct($name, $model, $typology, $firmware, $ports, $serialNumber) {
+    function __construct($name, $model, $typology, $firmware, $ports, $serialNumber, $userID) {
         $this->name = $name;
         $this->model = $model;
         $this->typology = $typology;
         $this->firmware = $firmware;
         $this->ports = $ports;
         $this->serialNumber = $serialNumber;
+        $this->userID = $userID;
     }
 
     
@@ -41,6 +43,10 @@ class Router implements Apparato
     function getSerialNumber() {
         return $this->serialNumber;
     }
+    
+    function getUserID() {
+        return $this->userID;
+    }
 
     function setName($name): void {
         $this->name = $name;
@@ -64,6 +70,10 @@ class Router implements Apparato
 
     function setSerialNumber($serialNumber): void {
         $this->serialNumber = $serialNumber;
+    }
+    
+    function setUserID($userID): void {
+        $this->userID = $userID;
     }
 
 

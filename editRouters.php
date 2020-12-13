@@ -5,28 +5,41 @@
         include 'model/' . $class . '.php';
     });
 
-    $dl = new DataLayer();
+    session_start();
+    if(!$_SESSION['logged']) {
+        header("location: auth.php");
+    }
     
-    if($_SERVER['REQUEST_METHOD']=="POST")
-    {
-        if (isset($_POST['serialNumber'])) 
-        {
+    if(isset($_GET['logout'])) {
+        session_destroy();
+        header("location: index.php");
+    }
+    
+    $dl = new DataLayer();
+    $userID = $dl->getUserID($_SESSION['loggedName']);
+    
+    if($_SERVER['REQUEST_METHOD'] == "POST") {
+        
+        $switches = $dl->findRouterBySerial($_GET['serialNumber']);
+        
+        if (isset($_POST['serialNumber']) && $switches->getUserID() == $userID) {
+            //edit
             $dl->editRouter($_POST['name'],$_POST['model'],$_POST['firmware'],$_POST['ports'],$_POST['serialNumber']);
             header("location: routers.php");            
-        }
-        else 
-        {
-            $dl->addRouter($_POST['name'],$_POST['model'],$_POST['firmware'],$_POST['ports'],$_POST['serialNumber']);
+        } else {
+            // create
+            $dl->addRouter($_POST['name'],$_POST['model'],$_POST['firmware'],$_POST['ports'],$_POST['serialNumber'],$userID);
             header("location: routers.php");
         }
     }
     
-    if (isset($_GET['serialNumber']))
-    {
-        $router = $dl->findRouterBySerial($_GET['serialNumber']);
+    if (isset($_GET['serialNumber'])) {
+        $switches = $dl->findRouterBySerial($_GET['serialNumber']);
     }
+
 ?>
 
+<!DOCTYPE html>
 <html>
     <?php
         if (isset($_GET['serialNumber'])) 
@@ -62,8 +75,12 @@
                         </li>
                     </ul>
                     <ul class="nav navbar-nav navbar-right">
-                        <li><a href="#"><span class="glyphicon glyphicon-user"></span> Sign Up</a></li>
-                        <li><a href="#"><span class="glyphicon glyphicon-log-in"></span> Login</a></li>
+                        <?php
+                            if(isset($_SESSION['logged'])) {
+                                echo '<li><a>Welcome ' . $_SESSION["loggedName"] . '</a></li>';
+                                echo '<li><a href="' . $_SERVER["PHP_SELF"] . '?logout=logout">Logout <span class="glyphicon glyphicon-log-out"></span></a></li>';
+                            }
+                        ?>
                     </ul>
                 </div>
             </div>
@@ -91,12 +108,9 @@
             <header class="header-section">
                 <h1>
                     <?php
-                        if (isset($_GET['serialNumber']))
-                        {
+                        if (isset($_GET['serialNumber'])) {
                             echo 'Edit Router';
-                        }
-                        else
-                        {
+                        } else {
                             echo 'Add Router';
                         }
                     ?>
@@ -113,7 +127,7 @@
                             <div class="col-sm-9">
                                 <?php
                                 if (isset($_GET['serialNumber'])) {
-                                    echo '<input class="form-control" type="text" id="name" name="name" placeholder="Router\'s actual name" value="' . $router->getName() . '">';
+                                    echo '<input class="form-control" type="text" id="name" name="name" placeholder="Router\'s actual name" value="' . $switches->getName() . '">';
                                 } else {
                                     echo '<input class="form-control" type="text" id="name" name="name" placeholder="Router\'s name">';
                                 }
@@ -126,9 +140,9 @@
                             <div class="col-sm-9">
                                 <?php
                                 if (isset($_GET['serialNumber'])) {
-                                    echo '<input class="form-control" type="text" id="model" name="model" placeholder="Router\'s actual model" value="' . $router->getModel() . '">';
+                                    echo '<select class="form-control" id="model" name="model" value="' . $switches->getModel() . '"><option selected>'.$switches->getModel().'</option><option>Cisco 4331</option><option>Cisco 2911</option></select>';
                                 } else {
-                                    echo '<input class="form-control" type="text" id="model" name="model" placeholder="Router\'s model">';
+                                    echo '<select class="form-control" id="model" name="model"><option selected>Modello</option><option>Cisco 4331</option><option>Cisco 2911</option></select>';
                                 }
                                 ?>
                             </div>
@@ -139,7 +153,7 @@
                             <div class="col-sm-9">
                                 <?php
                                 if (isset($_GET['serialNumber'])) {
-                                    echo '<input class="form-control" type="text" id="firmware" name="firmware" placeholder="Router\'s actual firmware" value="' . $router->getFirmware() . '">';
+                                    echo '<input class="form-control" type="text" id="firmware" name="firmware" placeholder="Router\'s actual firmware" value="' . $switches->getFirmware() . '">';
                                 } else {
                                     echo '<input class="form-control" type="text" id="firmware" name="firmware" placeholder="Router\'s firmware">';
                                 }
@@ -152,7 +166,7 @@
                             <div class="col-sm-9">
                                 <?php
                                 if (isset($_GET['serialNumber'])) {
-                                    echo '<input class="form-control" type="text" id="ports" name="ports" placeholder="Router\'s actual ports" value="' . $router->getPorts() . '">';
+                                    echo '<input class="form-control" type="text" id="ports" name="ports" placeholder="Router\'s actual ports" value="' . $switches->getPorts() . '">';
                                 } else {
                                     echo '<input class="form-control" type="text" id="ports" name="ports" placeholder="Router\'s ports">';
                                 }
@@ -165,7 +179,7 @@
                             <div class="col-sm-9">
                                 <?php
                                 if (isset($_GET['serialNumber'])) {
-                                    echo '<input class="form-control" type="text" id="serialNumber" name="serialNumber" placeholder="Router\'s actual S/N" value="' . $router->getSerialNumber() . '">';
+                                    echo '<input class="form-control form-control-plaintext" type="text" readonly id="serialNumber" name="serialNumber" placeholder="Router\'s actual S/N" value="' . $switches->getSerialNumber() . '">';
                                 } else {
                                     echo '<input class="form-control" type="text" id="serialNumber" name="serialNumber" placeholder="Router\'s S/N">';
                                 }
@@ -177,7 +191,7 @@
                             <div class="col-sm-9 col-sm-offset-3">
                                 <?php
                                 if (isset($_GET['serialNumber'])) {
-                                    echo '<input type="hidden" name="id" value="' . $router->getSerialNumber() . '"/>';
+                                    echo '<input type="hidden" name="id" value="' . $switches->getSerialNumber() . '"/>';
                                     echo '<label for="mySubmit" class="btn btn-primary btn-large btn-block"><span class="glyphicon glyphicon-save"></span> Save</label>';
                                     echo '<input id="mySubmit" type="submit" value=\'Save\' class="hidden"/>';
                                 } else {
